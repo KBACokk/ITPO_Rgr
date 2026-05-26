@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Бронирования · bookings-s11</title>
+
+  <style>
+    :root {
+      --bg: #f9fafb;
+      --surface: #ffffff;
+      --text: #111827;
+      --text-muted: #4b5563;
+      --border: #e5e7eb;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .nav {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav a {
+      font-size: 0.85rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .nav a:hover {
+      text-decoration: underline;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-group .hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    button {
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    button.primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    button.secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border-color: var(--border);
+    }
+
+    button.secondary:hover:not(:disabled) {
+      background: #e5e7eb;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #msg {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    #msg.show {
+      display: block;
+    }
+
+    #msg.ok {
+      background: #f0fdf4;
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+    }
+
+    #msg.err {
+      background: #fef2f2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .meta-badge {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    th,
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--text-muted);
+      background: #f9fafb;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: #f9fafb;
+    }
+
+    code.uuid {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #f3f4f6;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Бронирования (bookings-s11)</h1>
+      <p class="subtitle">Интерфейс для управления бронированиями</p>
+      <nav class="nav" aria-label="Ссылки">
+        <a href="/docs" target="_blank">OpenAPI</a>
+        <a href="/health" target="_blank">Health</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Форма бронирования -->
+      <section class="card" aria-labelledby="form-title">
+        <h2 id="form-title">Новая бронь</h2>
+
+        <div class="form-group">
+          <label for="resource_id">Ресурс</label>
+          <input id="resource_id" autocomplete="off" placeholder="room-A" value="room-A" />
+        </div>
+
+        <div class="form-group">
+          <label for="date">Дата</label>
+          <input id="date" type="text" placeholder="2026-06-15" autocomplete="off" />
+        </div>
+
+        <div class="form-group">
+          <label for="title">Название события</label>
+          <input id="title" autocomplete="off" placeholder="Встреча" value="Ретроспектива" />
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="primary" id="btnCreate">Создать</button>
+          <button type="button" class="secondary" id="btnRefresh">Обновить</button>
+        </div>
+
+        <div id="msg" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- Список броней -->
+      <section class="card" aria-labelledby="list-title">
+        <div class="list-header">
+          <h2 id="list-title" style="margin: 0; border: none; padding: 0;">Список броней</h2>
+          <span class="meta-badge" id="listMeta">Загрузка...</span>
+        </div>
+
+        <div id="tableWrap"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const msg = document.getElementById('msg');
+    const tableWrap = document.getElementById('tableWrap');
+    const listMeta = document.getElementById('listMeta');
+
+    function setMsg(text, cls) {
+      if (!text) {
+        msg.textContent = '';
+        msg.className = '';
+        return;
+      }
+      msg.textContent = text;
+      msg.className = 'show ' + (cls || '');
+    }
+
+    document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+
+    async function parseError(res) {
+      try {
+        const j = await res.json();
+        if (j.detail) return j.detail;
+        if (j.error && j.error.message) return j.error.message;
+      } catch (_) { }
+      try {
+        return await res.text();
+      } catch (_) {
+        return res.statusText;
+      }
+    }
+
+    function escapeHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    async function refreshList() {
+      setMsg('');
+      try {
+        const r = await fetch('/api/bookings');
+        if (!r.ok) {
+          setMsg(await parseError(r), 'err');
+          tableWrap.innerHTML = '';
+          listMeta.textContent = 'Ошибка';
+          return;
+        }
+        const rows = await r.json();
+        const t = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        listMeta.textContent = 'Всего: ' + rows.length + ' · Обновлено ' + t;
+
+        if (!rows.length) {
+          tableWrap.innerHTML = '<div class="empty-state">Бронирований пока нет.</div>';
+          return;
+        }
+
+        const th = '<tr><th>ID</th><th>Ресурс</th><th>Дата</th><th>Событие</th></tr>';
+        const body = rows
+          .map(
+            (b) =>
+              '<tr><td><code class="uuid" title="' +
+              escapeHtml(b.id) +
+              '">' +
+              escapeHtml(b.id.slice(0, 8)) +
+              '…</code></td><td style="font-weight: 600;">' +
+              escapeHtml(b.resource_id) +
+              '</td><td>' +
+              escapeHtml(b.date) +
+              '</td><td>' +
+              escapeHtml(b.title) +
+              '</td></tr>'
+          )
+          .join('');
+        tableWrap.innerHTML = '<div class="table-container"><table><thead>' + th + '</thead><tbody>' + body + '</tbody></table></div>';
+      } catch (e) {
+        setMsg(String(e.message || e), 'err');
+        tableWrap.innerHTML = '';
+        listMeta.textContent = 'Ошибка';
+      }
+    }
+
+    document.getElementById('btnCreate').onclick = async () => {
+      setMsg('');
+      const btn = document.getElementById('btnCreate');
+      const body = {
+        resource_id: document.getElementById('resource_id').value.trim(),
+        date: document.getElementById('date').value.trim(),
+        title: document.getElementById('title').value.trim(),
+      };
+
+      if (!body.resource_id || !body.date || !body.title) {
+        setMsg('Пожалуйста, заполните все поля', 'err');
+        return;
+      }
+
+      btn.disabled = true;
+      try {
+        const r = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        if (r.status === 409) {
+          setMsg('Ресурс «' + body.resource_id + '» на дату ' + body.date + ' уже занят', 'err');
+          return;
+        }
+
+        if (!r.ok) {
+          setMsg('Ошибка создания: ' + (await parseError(r)), 'err');
+          return;
+        }
+
+        const created = await r.json();
+        setMsg('Успешно создано: «' + created.title + '» на ' + created.date, 'ok');
+        await refreshList();
+      } catch (e) {
+        setMsg('Ошибка: ' + String(e.message || e), 'err');
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    document.getElementById('btnRefresh').onclick = refreshList;
+    refreshList();
+  </script>
+</body>
+
+</html>

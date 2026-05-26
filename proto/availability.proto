@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package availability.v1;
+
+option go_package = "availability/v1;availabilityv1";
+
+service AvailabilityService {
+  rpc ReserveSlot (ReserveSlotRequest) returns (ReserveSlotResponse);
+  rpc ReleaseSlot (ReleaseSlotRequest) returns (ReleaseSlotResponse);
+}
+
+message ReserveSlotRequest {
+  string resource_id = 1;
+  string date = 2;
+}
+
+message ReserveSlotResponse {
+  bool ok = 1;
+  string reason = 2;
+}
+
+message ReleaseSlotRequest {
+  string resource_id = 1;
+  string date = 2;
+}
+
+message ReleaseSlotResponse {
+  bool ok = 1;
+}

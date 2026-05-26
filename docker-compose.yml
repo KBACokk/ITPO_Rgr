@@ -1,0 +1,51 @@
+# Локальный запуск стека bookings-s11 (неделя 17).
+# Одна команда: docker compose up --build (из каталога weeks/week-17)
+
+services:
+  availability-svc:
+    build:
+      context: .
+      dockerfile: services/availability_service/Dockerfile
+    environment:
+      GRPC_PORT: "8273"
+      AVAILABILITY_DB: /data/availability.db
+    volumes:
+      - availability-data:/data
+    networks:
+      - bookings-net
+
+  bookings-svc:
+    build:
+      context: .
+      dockerfile: services/bookings_service/Dockerfile
+    environment:
+      GRPC_PORT: "8272"
+      BOOKINGS_DB: /data/bookings.db
+      AVAILABILITY_GRPC_TARGET: availability-svc:8273
+    volumes:
+      - bookings-data:/data
+    depends_on:
+      - availability-svc
+    networks:
+      - bookings-net
+
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      BOOKINGS_GRPC_TARGET: bookings-svc:8272
+    depends_on:
+      - bookings-svc
+    networks:
+      - bookings-net
+
+volumes:
+  availability-data:
+  bookings-data:
+
+networks:
+  bookings-net:
+    driver: bridge
