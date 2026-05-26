@@ -22,7 +22,7 @@ This project is a resilient booking system consisting of three microservices.
 
 ## Components
 
-1. **REST API Gateway (port 8080)**:
+1. **REST API Gateway (port 8080)**: 
    - Client entry point. Receives REST requests and proxies them to the BookingsService gRPC service.
    - Serves the static HTML interface at `/`.
    
