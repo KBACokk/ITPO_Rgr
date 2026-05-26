@@ -62,22 +62,3 @@ set GROUP=432
 set STUDENT_ID=s11
 ```
 
-## Перегенерация gRPC-кода из proto
-
-См. [scripts/regenerate-grpc.md](./scripts/regenerate-grpc.md).
-
-## Kubernetes (опционально)
-
-```bash
-helm upgrade --install bookings-s11 ./chart -n bookings --create-namespace
-```
-
-Образы по умолчанию заданы в `chart/values.yaml` — перед деплоем подставьте свой registry или соберите образы локально и обновите теги.
-
-## Проверка курса
-
-Из корня репозитория:
-
-```bash
-make test WEEK=17
-```
