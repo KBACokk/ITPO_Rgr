@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookings-svc
+  labels:
+    app: bookings-svc
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: bookings-svc
+  template:
+    metadata:
+      labels:
+        app: bookings-svc
+    spec:
+      containers:
+        - name: bookings-svc
+          image: "{{ .Values.image.repositoryPrefix }}/bookings-svc:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.bookings.port }}
+          env:
+            - name: GRPC_PORT
+              value: "{{ .Values.bookings.port }}"
+            - name: BOOKINGS_DB
+              value: "/data/bookings.db"
+            - name: AVAILABILITY_GRPC_TARGET
+              value: "availability-svc:{{ .Values.availability.port }}"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}

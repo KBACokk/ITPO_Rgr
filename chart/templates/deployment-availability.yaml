@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: availability-svc
+  labels:
+    app: availability-svc
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: availability-svc
+  template:
+    metadata:
+      labels:
+        app: availability-svc
+    spec:
+      containers:
+        - name: availability-svc
+          image: "{{ .Values.image.repositoryPrefix }}/availability-svc:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.availability.port }}
+          env:
+            - name: GRPC_PORT
+              value: "{{ .Values.availability.port }}"
+            - name: AVAILABILITY_DB
+              value: "/data/availability.db"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}

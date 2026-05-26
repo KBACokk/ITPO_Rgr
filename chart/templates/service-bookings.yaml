@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookings-svc
+  labels:
+    app: bookings-svc
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.bookings.port }}
+      targetPort: {{ .Values.bookings.port }}
+      protocol: TCP
+      name: grpc
+  selector:
+    app: bookings-svc

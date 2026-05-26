@@ -1,0 +1,18 @@
+replicaCount: 1
+
+image:
+  repositoryPrefix: "YOUR_DOCKERHUB_USERNAME"
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+
+gateway:
+  port: 8080
+
+bookings:
+  port: 8272
+
+availability:
+  port: 8273
