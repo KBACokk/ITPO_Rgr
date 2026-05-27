@@ -1,43 +1,42 @@
-# Architecture of **bookings-s11**
+# Архитектура **bookings-s11**
 
-This project is a resilient booking system consisting of three microservices.
+Этот проект представляет собой отказоустойчивую систему бронирования, состоящую из трех микросервисов.
 
-## Interaction Flow
+## Поток взаимодействия
 
 ```
-[ Client (Browser / curl) ]
+[ Клиент (Браузер / curl) ]
              |
              | HTTP (REST API)
              v
-     [ REST API Gateway ]  (port 8080)
+     [ REST API Gateway ]  (порт 8080)
              |
              | gRPC
              v
-     [ BookingsService ]   (port 8272)
+     [ BookingsService ]   (порт 8272)
              |
              | gRPC
              v
-   [ AvailabilityService ] (port 8273)
+   [ AvailabilityService ] (порт 8273)
 ```
 
-## Components
+# Компоненты
 
-1. **REST API Gateway (port 8080)**: 
-   - Client entry point. Receives REST requests and proxies them to the BookingsService gRPC service.
-   - Serves the static HTML interface at `/`.
-   
-2. **BookingsService (port 8272)**:
-   - Core booking logic (create, get, list).
-   - Database: SQLite (`/data/bookings.db`).
-   - Before completing a booking, it requests a slot reservation from the AvailabilityService.
-   - Performs a compensating transaction (ReleaseSlot) if the local database transaction fails.
+## REST API Gateway (порт 8080)
+- Точка входа для клиентов. Принимает REST-запросы и проксирует их в gRPC-сервис `BookingsService`.
+- Раздает статический HTML-интерфейс по пути `/`.
 
-3. **AvailabilityService (port 8273)**:
-   - Manages slot availability.
-   - Database: SQLite (`/data/availability.db`).
-   - Ensures slot uniqueness with a composite primary key (resource_id, date).
+## BookingsService (порт 8272)
+- Основная логика бронирования (создание, получение, список).
+- База данных: SQLite (`/data/bookings.db`).
+- Перед завершением бронирования запрашивает резервирование слота у `AvailabilityService`.
+- Выполняет компенсирующую транзакцию (`ReleaseSlot`), если локальная транзакция в базе данных завершается ошибкой.
 
-## Resiliency
+## AvailabilityService (порт 8273)
+- Управляет доступностью слотов.
+- База данных: SQLite (`/data/availability.db`).
+- Обеспечивает уникальность слотов с помощью составного первичного ключа (`resource_id`, `date`).
 
-- Distributed transaction pattern with compensation.
-- Isolated databases for each service.
+# Отказоустойчивость
+- Паттерн распределенной транзакции с компенсацией.
+- Изолированные базы данных для каждого сервиса.
